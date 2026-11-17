@@ -12,7 +12,7 @@ Projeto de Banco de Dados referente à modelagem conceitual (TP1), projeto lógi
 
 ## Ambiente e Ferramenta Utilizados
 - **SGBD / Ambiente PostgreSQL:** `PostgreSQL 16`
-- **Ferramenta para execução dos scripts:** `pgAdmin 4`
+- **Ferramenta para execução dos scripts:** `pgAdmin 4` (via **Query Tool**)
 
 ---
 
@@ -72,11 +72,29 @@ Foram implementados dois gatilhos `BEFORE INSERT OR UPDATE` em PL/pgSQL para gar
 
 ---
 
-## Instruções para Recriar o Banco do Zero
+## Instruções para Recriar o Banco do Zero (pgAdmin 4)
 
 ### 1. Criar um banco de dados limpo (caso ainda não exista)
-Conecte-se ao PostgreSQL 16 (usando `[PREENCHER: ferramenta utilizada]`) e crie o banco:
+1. Abra o **pgAdmin 4** e conecte-se ao servidor **PostgreSQL 16**.
+2. No painel lateral esquerdo (**Browser**), escolha uma das opções abaixo:
+   - **Via interface gráfica:** clique com o botão direito em **Databases** → **Create** → **Database...**, informe o nome `gestor_eventos_academicos` (com codificação `UTF8`) e clique em **Save**.
+   - **Via SQL (Query Tool):** clique com o botão direito no banco padrão `postgres` → **Query Tool** e execute os comandos abaixo **um de cada vez** (selecionando cada linha e clicando em **Execute script**):
 
 ```sql
 DROP DATABASE IF EXISTS gestor_eventos_academicos;
 CREATE DATABASE gestor_eventos_academicos ENCODING 'UTF8';
+```
+
+### 2. Executar os scripts de criação, carga e objetos
+No painel **Browser** do pgAdmin 4:
+
+1. Expanda **Databases**, clique com o botão direito sobre **`gestor_eventos_academicos`** e selecione **Query Tool**.
+   *(Caso o banco já tenha sido utilizado antes, não é necessário apagá-lo manualmente: o script `01_create.sql` já executa `DROP SCHEMA IF EXISTS public CASCADE; CREATE SCHEMA public;`.)*
+2. Na barra de ferramentas do **Query Tool**, clique no ícone **Open File** (`Ctrl + O` no Windows/Linux ou `Cmd + O` no Mac), selecione **`01_create.sql`** e clique em **Execute script** (`F5` / botão de execução) para criar as 13 tabelas e restrições.
+3. Repita o processo (**Open File** → **Execute script**) para o arquivo **`02_insert.sql`** (inserção da massa inicial de dados).
+4. Repita o processo (**Open File** → **Execute script**) para o arquivo **`03_objects.sql`** (criação das `VIEW`s, `INDEX`es, `FUNCTION`s e `TRIGGER`s).
+
+### 3. Executar as consultas e testes de validação (`04_tests.sql`)
+1. Ainda conectado ao banco `gestor_eventos_academicos` no **Query Tool**, abra o arquivo **`04_tests.sql`** usando **Open File**.
+2. Selecione e execute as seções **1 e 2** para conferir o retorno das `VIEW`s (`vw_cronograma_atividades` e `vw_status_inscricoes`) e das consultas com `JOIN` e `GROUP BY`.
+3. Na seção **3**, **selecione e execute cada bloco SQL individualmente** (destacando o comando desejado antes de clicar em **Execute script**): os testes `RO-04`, `RA-04`, `RA-02` e `RA-03` **devem falhar propositalmente** (`RAISE EXCEPTION`) para comprovar os bloqueios dos gatilhos, e o comando intermediário de preparação (`INSERT INTO INSCRICAO ...`) precisa ser executado antes do teste `RA-02` para gerar a inscrição de teste (`id_inscricao = 2`).
