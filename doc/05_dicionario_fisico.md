@@ -243,3 +243,24 @@
 | `carga_horaria_certificada` | `INT` | `NOT NULL` | — | `chk_certificado_ch` (`> 0`); `<= carga_horaria` da atividade via `trg_valida_certificado` (RA-03) |
 | `link_pdf` | `VARCHAR(255)` | `NULL` (Opcional) | — | `chk_certificado_pdf`: deve iniciar com `http` |
 | `observacao` | `TEXT` | `NULL` (Opcional) | — | Observação adicional sobre o certificado |
+---
+
+## Objetos físicos complementares
+
+| Objeto | Tipo | Tabela(s) / referência | Finalidade |
+| :--- | :--- | :--- | :--- |
+| `vw_cronograma_atividades` | VIEW | `EVENTO`, `ATIVIDADE`, `MINISTRA`, `PALESTRANTE`, `SALA` | Consulta consolidada da programação, palestrantes e salas. |
+| `vw_status_inscricoes` | VIEW | `INSCRICAO`, `PARTICIPANTE`, `ATIVIDADE` | Consulta consolidada de inscrições, status, check-in e avaliação. |
+| `idx_participante_nome` | INDEX | `PARTICIPANTE(nome_participante)` | Apoia buscas e listagens por nome. |
+| `idx_participante_email` | INDEX | `PARTICIPANTE(email_participante)` | Apoia buscas por e-mail. |
+| `idx_evento_datas` | INDEX | `EVENTO(data_inicio, data_fim)` | Apoia consultas por período dos eventos. |
+| `fn_valida_inscricao()` / `trg_valida_inscricao` | FUNCTION / TRIGGER | `INSCRICAO` | Aplica RO-04 e RA-04 antes de inserções e atualizações. |
+| `fn_valida_certificado()` / `trg_valida_certificado` | FUNCTION / TRIGGER | `CERTIFICADO` | Aplica RA-02 e RA-03 antes de inserções e atualizações. |
+
+## Observação sobre a especialização de PARTICIPANTE
+
+A especialização de `PARTICIPANTE` em `ALUNO`, `PROFESSOR` e `EXTERNO` (RA-01) está indicada como regra de aplicação no modelo. O esquema físico apresentado não possui, neste momento, uma constraint ou trigger que imponha automaticamente a participação em exatamente uma dessas tabelas. Portanto, essa regra deve ser validada pela aplicação até que a equipe decida implementar uma regra adicional no banco.
+
+## Ambiente de execução
+
+O dicionário descreve o modelo físico PostgreSQL e não depende de hospedagem local ou remota. A mesma estrutura pode ser executada em uma instância PostgreSQL 16 local ou em um serviço PostgreSQL gerenciado, como o Neon, desde que o usuário tenha permissões para criar e remover os objetos do schema utilizado.
