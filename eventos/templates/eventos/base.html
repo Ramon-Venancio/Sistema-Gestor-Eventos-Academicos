@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="pt-br">
+<head><meta charset="utf-8"><title>Gestor de Eventos</title>
+<style>
+ body{font-family:sans-serif;max-width:960px;margin:2rem auto;padding:0 1rem}
+ nav a{margin-right:1rem} table{border-collapse:collapse;width:100%;margin-top:1rem}
+ td,th{border:1px solid #ccc;padding:6px;text-align:left}
+ .success{color:#060;font-weight:bold}.error{color:#a00;font-weight:bold}
+</style></head>
+<body>
+<nav>
+ <a href="{% url 'evento_list' %}">Eventos</a>
+ <a href="{% url 'inscricao_multipla' %}">Inscrever em atividades</a>
+ <a href="{% url 'inscricao_list' %}">Inscrições</a>
+ <a href="{% url 'relatorio_join' %}">JOIN</a>
+ <a href="{% url 'relatorio_group' %}">GROUP BY</a>
+ <a href="{% url 'relatorio_having' %}">HAVING</a>
+ <a href="/admin/">Admin</a>
+</nav><hr>
+{% for m in messages %}<p class="{{ m.tags }}">{{ m }}</p>{% endfor %}
+{% block content %}{% endblock %}
+</body></html>

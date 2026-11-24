@@ -1,0 +1,15 @@
+{% extends 'eventos/base.html' %}
+{% block content %}
+<h1>Eventos</h1>
+<form method="get"><input name="q" value="{{ q }}" placeholder="Buscar pelo nome">
+<button>Buscar</button> <a href="{% url 'evento_create' %}">+ Novo evento</a></form>
+<table><tr><th>Código</th><th>Nome</th><th>Início</th><th>Fim</th><th></th></tr>
+{% for e in eventos %}
+<tr><td>{{ e.codigo_evento }}</td><td>{{ e.nome_evento }}</td>
+<td>{{ e.data_inicio|date:"d/m/Y" }}</td><td>{{ e.data_fim|date:"d/m/Y" }}</td>
+<td><a href="{% url 'evento_detail' e.pk %}">Ver</a>
+<a href="{% url 'evento_update' e.pk %}">Editar</a>
+<a href="{% url 'evento_delete' e.pk %}">Excluir</a></td></tr>
+{% empty %}<tr><td colspan="5">Nenhum evento.</td></tr>{% endfor %}
+</table>
+{% endblock %}

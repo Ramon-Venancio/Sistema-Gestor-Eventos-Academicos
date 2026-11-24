@@ -1,0 +1,11 @@
+{% extends 'eventos/base.html' %}
+{% block content %}
+<h1>{{ evento.nome_evento }}</h1>
+<p>{{ evento.data_inicio|date:"d/m/Y" }} a {{ evento.data_fim|date:"d/m/Y" }} | {{ evento.email_contato|default:"-" }}</p>
+<p>{{ evento.descricao_evento|default:"" }}</p>
+<h3>Atividades</h3>
+<p><a href="{% url 'atividade_create' evento.pk %}">+ Nova atividade</a></p>
+<ul>{% for a in atividades %}<li>{{ a.titulo }} ({{ a.tipo }}, {{ a.carga_horaria }}h)</li>
+{% empty %}<li>Sem atividades.</li>{% endfor %}</ul>
+<p><a href="{% url 'evento_list' %}">Voltar</a></p>
+{% endblock %}

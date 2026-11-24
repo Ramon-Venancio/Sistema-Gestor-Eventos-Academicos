@@ -1,0 +1,10 @@
+{% extends 'eventos/base.html' %}
+{% block content %}
+<h1>{{ titulo }}</h1>
+{% if mostrar_filtro %}<form method="get">Mínimo de inscritos:
+<input type="number" name="min" value="{{ minimo }}"><button>Filtrar</button></form>{% endif %}
+<table><tr>{% for c in colunas %}<th>{{ c }}</th>{% endfor %}</tr>
+{% for linha in linhas %}<tr>{% for v in linha %}<td>{{ v }}</td>{% endfor %}</tr>
+{% empty %}<tr><td colspan="{{ colunas|length }}">Sem resultados.</td></tr>{% endfor %}
+</table>
+{% endblock %}
