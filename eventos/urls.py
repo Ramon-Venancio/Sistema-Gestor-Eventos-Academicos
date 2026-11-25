@@ -7,7 +7,7 @@ urlpatterns = [
     path('eventos/<int:pk>/', views.evento_detail, name='evento_detail'),
     path('eventos/<int:pk>/editar/', views.evento_update, name='evento_update'),
     path('eventos/<int:pk>/excluir/', views.evento_delete, name='evento_delete'),
-path('eventos/<int:evento_pk>/participantes/', views.evento_participante_list, name='evento_participante_list'),
+    path('eventos/<int:evento_pk>/participantes/', views.evento_participante_list, name='evento_participante_list'),
     path('eventos/<int:evento_pk>/atividades/', views.atividade_list, name='atividade_list'),
     path('eventos/<int:evento_pk>/atividades/nova/', views.atividade_create, name='atividade_create'),
     path('eventos/<int:evento_pk>/atividades/<int:pk>/editar/', views.atividade_update, name='atividade_update'),
@@ -16,8 +16,6 @@ path('eventos/<int:evento_pk>/participantes/', views.evento_participante_list, n
     path('inscricoes/', views.inscricao_list, name='inscricao_list'),
     path('inscricoes/nova/', views.inscricao_multipla, name='inscricao_multipla'),
     path('inscricoes/<int:pk>/checkin/', views.inscricao_checkin, name='inscricao_checkin'),
-
-    path('certificados/novo/', views.certificado_create, name='certificado_create'),
 
     path('relatorios/join/', views.relatorio_join, name='relatorio_join'),
     path('relatorios/group-by/', views.relatorio_group, name='relatorio_group'),
