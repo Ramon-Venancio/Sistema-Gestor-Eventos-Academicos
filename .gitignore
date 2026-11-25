@@ -1,31 +1,24 @@
-# Ambiente virtual
+# Python
+__pycache__/
+*.py[cod]
+
+# Virtual environment
 venv/
 .venv/
 env/
 
-# Python
-__pycache__/
-*.py[cod]
-*.pyo
+# Environment variables
+.env
+.env.*
+!.env.example
 
 # Django
 db.sqlite3
 staticfiles/
 
-# Variáveis de ambiente
-.env
-.env.*
-
-# Exceção para arquivos de exemplo
-!.env.example
-
 # IDEs
 .vscode/
 .idea/
-
-# Sistema operacional
-.DS_Store
-Thumbs.db
 
 # Logs
 *.log
