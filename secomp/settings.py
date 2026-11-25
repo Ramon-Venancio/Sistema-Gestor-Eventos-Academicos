@@ -24,8 +24,11 @@ SECRET_KEY = os.environ.get("SECRET_KEY", "chave-insegura-apenas-para-dev-local"
 DEBUG = os.environ.get("DEBUG", "False").lower() == "true"
 
 # Permite localhost em dev e o domínio da plataforma em produção
-ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "127.0.0.1,localhost").split(",")
-
+ALLOWED_HOSTS = [
+    h.strip()
+    for h in os.environ.get("ALLOWED_HOSTS", "127.0.0.1,localhost").split(",")
+    if h.strip()
+]
 # Obrigatório no Django 4+ para formulários (login, POST) funcionarem com HTTPS!
 CSRF_TRUSTED_ORIGINS = [
     f"https://{host.strip()}"
@@ -77,18 +80,25 @@ WSGI_APPLICATION = 'secomp.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.1/ref/settings/#databases
 
-DATABASES = {
-    "default": dj_database_url.config(
-        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
-        conn_max_age=0,  # Ou valor menor que 300s (5 min)
-        ssl_require=True,
-    )
-}
+DATABASE_URL = os.environ.get("DATABASE_URL")
 
-# Ajustes recomendados pelo Neon para evitar erros após inatividade e com pooler
-if os.environ.get("DATABASE_URL"):
+if DATABASE_URL:
+    DATABASES = {
+        "default": dj_database_url.parse(
+            DATABASE_URL,
+            conn_max_age=0,
+            ssl_require=True,
+        )
+    }
     DATABASES["default"]["CONN_HEALTH_CHECKS"] = True
     DATABASES["default"]["DISABLE_SERVER_SIDE_CURSORS"] = True
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/6.1/ref/settings/#auth-password-validators
@@ -112,9 +122,8 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/6.1/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
-
-TIME_ZONE = 'UTC'
+LANGUAGE_CODE = 'pt-br'
+TIME_ZONE = 'America/Sao_Paulo'
 
 USE_I18N = True
 
@@ -142,5 +151,26 @@ STORAGES = {
 MAILERS = {
     'default': {
         'BACKEND': 'django.core.mail.backends.console.EmailBackend',
+    },
+}
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+        },
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["console"],
+            "level": "INFO",
+        },
+        "django.request": {
+            "handlers": ["console"],
+            "level": "ERROR",
+            "propagate": False,
+        },
     },
 }
