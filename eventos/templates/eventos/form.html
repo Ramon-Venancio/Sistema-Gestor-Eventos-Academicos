@@ -1,5 +1,43 @@
 {% extends 'eventos/base.html' %}
+
+{% block title %}{{ titulo|default:"Formulário" }}{% endblock %}
+
 {% block content %}
-<h1>{{ titulo }}</h1>
-<form method="post">{% csrf_token %}{{ form.as_p }}<button>Salvar</button></form>
+<div class="card shadow-sm" style="max-width: 680px;">
+  <div class="card-body">
+    <h1 class="h4 mb-4">{{ titulo|default:"Formulário" }}</h1>
+
+    <form method="post" id="styled-form" novalidate>
+      {% csrf_token %}
+
+      {% if form.non_field_errors %}
+        <div class="alert alert-danger">
+          {{ form.non_field_errors }}
+        </div>
+      {% endif %}
+
+      {{ form.as_p }}
+
+      <div class="mt-3 d-flex gap-2">
+        <button type="submit" class="btn btn-primary">Salvar</button>
+        <a href="javascript:history.back()" class="btn btn-outline-secondary">Voltar</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll('#styled-form input, #styled-form select, #styled-form textarea').forEach(el => {
+    if (el.type === 'checkbox') {
+      el.classList.add('form-check-input');
+    } else if (el.tagName === 'SELECT') {
+      el.classList.add('form-select');
+    } else if (el.type !== 'hidden') {
+      el.classList.add('form-control');
+    }
+  });
+  document.querySelectorAll('#styled-form .errorlist').forEach(ul => {
+    ul.classList.add('text-danger', 'small', 'list-unstyled', 'mt-1');
+  });
+</script>
 {% endblock %}

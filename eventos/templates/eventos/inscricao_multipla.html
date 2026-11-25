@@ -1,12 +1,40 @@
 {% extends 'eventos/base.html' %}
+
+{% block title %}Inscrição múltipla{% endblock %}
+
 {% block content %}
-<h1>Inscrever participante em várias atividades</h1>
-<form method="post">{% csrf_token %}
-<p><select name="participante">
-{% for p in participantes %}<option value="{{ p.pk }}">{{ p.nome_participante }}</option>{% endfor %}
-</select></p>
-{% for a in atividades %}
-<label><input type="checkbox" name="atividades" value="{{ a.pk }}"> {{ a.titulo }}</label><br>
-{% endfor %}
-<p><button>Inscrever</button></p></form>
+<div class="card shadow-sm" style="max-width: 640px;">
+  <div class="card-body">
+    <h1 class="h4 mb-4">Inscrever participante em várias atividades</h1>
+
+    <form method="post">
+      {% csrf_token %}
+
+      <div class="mb-3">
+        <label for="id_participante" class="form-label">Participante</label>
+        <select name="participante" id="id_participante" class="form-select">
+          {% for p in participantes %}
+            <option value="{{ p.pk }}">{{ p.nome_participante }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="mb-4">
+        <label class="form-label d-block">Atividades</label>
+        <div class="border rounded p-3 bg-white">
+          {% for a in atividades %}
+            <div class="form-check mb-2">
+              <input class="form-check-input" type="checkbox" name="atividades" value="{{ a.pk }}" id="atv_{{ a.pk }}">
+              <label class="form-check-label" for="atv_{{ a.pk }}">{{ a.titulo }}</label>
+            </div>
+          {% empty %}
+            <span class="text-muted">Nenhuma atividade disponível.</span>
+          {% endfor %}
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary">Inscrever</button>
+    </form>
+  </div>
+</div>
 {% endblock %}

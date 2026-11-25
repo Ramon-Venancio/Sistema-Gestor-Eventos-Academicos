@@ -1,0 +1,25 @@
+{% extends 'eventos/base.html' %}
+
+{% block title %}Excluir participante{% endblock %}
+
+{% block content %}
+<div class="card shadow-sm border-danger" style="max-width: 540px;">
+  <div class="card-body">
+    <h1 class="h4 text-danger mb-3">Excluir participante</h1>
+    <p class="mb-4">
+      Deseja excluir <strong>{{ participante.nome_participante }}</strong>
+      (CPF: {{ participante.cpf_participante }} — {{ categoria }})?
+    </p>
+    <form method="post" class="d-flex gap-2">
+  {% csrf_token %}
+  {% if evento_id %}
+    <input type="hidden" name="evento" value="{{ evento_id }}">
+  {% endif %}
+  <button type="submit" class="btn btn-danger">Confirmar exclusão</button>
+  <a href="{% url 'participante_list' %}{% if evento_id %}?evento={{ evento_id }}{% endif %}" class="btn btn-secondary">
+    Cancelar
+  </a>
+</form>
+  </div>
+</div>
+{% endblock %}

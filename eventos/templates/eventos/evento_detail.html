@@ -1,11 +1,37 @@
 {% extends 'eventos/base.html' %}
+
+{% block title %}{{ evento.nome_evento }}{% endblock %}
+
 {% block content %}
-<h1>{{ evento.nome_evento }}</h1>
-<p>{{ evento.data_inicio|date:"d/m/Y" }} a {{ evento.data_fim|date:"d/m/Y" }} | {{ evento.email_contato|default:"-" }}</p>
-<p>{{ evento.descricao_evento|default:"" }}</p>
-<h3>Atividades</h3>
-<p><a href="{% url 'atividade_create' evento.pk %}">+ Nova atividade</a></p>
-<ul>{% for a in atividades %}<li>{{ a.titulo }} ({{ a.tipo }}, {{ a.carga_horaria }}h)</li>
-{% empty %}<li>Sem atividades.</li>{% endfor %}</ul>
-<p><a href="{% url 'evento_list' %}">Voltar</a></p>
+<div class="mb-3">
+  <a href="{% url 'evento_list' %}" class="btn btn-sm btn-outline-secondary">&larr; Voltar para eventos</a>
+</div>
+
+<div class="card shadow-sm mb-4">
+  <div class="card-body">
+    <h1 class="h3 card-title">{{ evento.nome_evento }}</h1>
+    <p class="text-muted mb-2">
+      <strong>Período:</strong> {{ evento.data_inicio|date:"d/m/Y" }} a {{ evento.data_fim|date:"d/m/Y" }}
+      {% if evento.email_contato %}
+        &middot; <strong>Contato:</strong> {{ evento.email_contato }}
+      {% endif %}
+    </p>
+
+    <p class="card-text mb-3">
+      <a href="{% url 'atividade_list' evento.pk %}" class="text-decoration-none">
+        {{ evento.descricao_evento|default:"Clique aqui para visualizar e gerenciar as atividades deste evento." }}
+      </a>
+    </p>
+
+    <a href="{% url 'atividade_list' evento.pk %}" class="btn btn-primary btn-sm">
+        Gerenciar atividades do evento &rarr;
+    </a>
+    <a href="{% url 'evento_participante_list' evento.pk %}" class="btn btn-outline-dark btn-sm">
+        Participantes / Inscrição &amp; Check-in
+    </a>
+    <a href="{% url 'participante_create' %}?evento={{ evento.pk }}" class="btn btn-outline-success btn-sm">
+        + Novo participante para o evento
+    </a>
+  </div>
+</div>
 {% endblock %}

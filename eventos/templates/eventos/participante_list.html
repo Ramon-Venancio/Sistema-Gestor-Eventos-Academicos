@@ -1,0 +1,159 @@
+{% extends 'eventos/base.html' %}
+
+{% block title %}Participantes{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+  <div>
+    {% if evento_filtro %}
+      <a href="{% url 'evento_detail' evento_filtro.pk %}" class="btn btn-sm btn-outline-secondary mb-2">
+        &larr; Voltar para {{ evento_filtro.nome_evento }}
+      </a>
+      <h1 class="h3 mb-0">Participantes — {{ evento_filtro.nome_evento }}</h1>
+    {% else %}
+      <h1 class="h3 mb-0">Todos os participantes</h1>
+    {% endif %}
+  </div>
+
+  <div class="d-flex flex-wrap gap-2">
+    {% if evento_filtro %}
+      <a href="{% url 'participante_list' %}" class="btn btn-outline-secondary">
+        Ver todos os participantes
+      </a>
+      <a href="{% url 'inscricao_multipla' %}?evento={{ evento_filtro.pk }}" class="btn btn-outline-primary">
+        + Inscrever já cadastrado
+      </a>
+    {% endif %}
+    <a href="{% url 'participante_create' %}" class="btn btn-primary">
+      + Novo participante
+    </a>
+  </div>
+</div>
+
+<form method="get" class="row g-2 mb-4">
+  {% if evento_filtro %}
+    <input type="hidden" name="evento" value="{{ evento_filtro.pk }}">
+  {% endif %}
+  <div class="col-md-5">
+    <input type="text" name="nome" value="{{ nome }}" class="form-control" placeholder="Buscar por nome...">
+  </div>
+  <div class="col-md-4">
+    <select name="categoria" class="form-select">
+      <option value="todos" {% if categoria == 'todos' %}selected{% endif %}>Todas as categorias</option>
+      <option value="aluno" {% if categoria == 'aluno' %}selected{% endif %}>Aluno</option>
+      <option value="professor" {% if categoria == 'professor' %}selected{% endif %}>Professor</option>
+      <option value="externo" {% if categoria == 'externo' %}selected{% endif %}>Externo</option>
+    </select>
+  </div>
+  <div class="col-auto">
+    <button type="submit" class="btn btn-outline-secondary">Buscar</button>
+    {% if evento_filtro %}
+      <a href="{% url 'evento_participante_list' evento_filtro.pk %}" class="btn btn-link text-decoration-none">Limpar</a>
+    {% else %}
+      <a href="{% url 'participante_list' %}" class="btn btn-link text-decoration-none">Limpar</a>
+    {% endif %}
+  </div>
+</form>
+
+<div class="card shadow-sm">
+  <div class="table-responsive">
+    <table class="table table-striped table-hover align-middle mb-0">
+      <thead class="table-dark">
+        <tr>
+          <th>CPF</th>
+          <th>Nome</th>
+          <th>Categoria</th>
+          <th>Inscrições &amp; Check-in</th>
+          <th class="text-end">Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in itens %}
+          {% with p=item.participante %}
+            <tr>
+              <td class="text-nowrap">{{ p.cpf_participante }}</td>
+              <td class="text-nowrap">
+                <div class="fw-medium">{{ p.nome_participante }}</div>
+                <small class="text-muted">{{ p.email_participante }}</small>
+              </td>
+              <td class="text-nowrap">
+                <span class="badge bg-secondary">{{ item.categoria }}</span>
+              </td>
+              <td>
+                {% for ins in item.inscricoes %}
+                  <div class="d-flex align-items-center justify-content-between gap-2 border rounded px-2 py-1 mb-1 bg-white">
+                    <div class="text-nowrap">
+                      <small class="fw-medium">{{ ins.codigo_atividade.titulo }}</small>
+                      <small class="text-muted">({{ ins.status }})</small>
+                      {% if ins.data_hora_checkin %}
+                        <span class="badge bg-success ms-1">Check-in: {{ ins.data_hora_checkin|date:"d/m H:i" }}</span>
+                      {% else %}
+                        <span class="badge bg-warning text-dark ms-1">Sem check-in</span>
+                      {% endif %}
+                    </div>
+
+                    <div class="d-flex gap-1 align-items-center flex-shrink-0 text-nowrap">
+                      {% if ins.status == 'Pendente' %}
+                        <form method="post" action="{% url 'inscricao_alterar_status' ins.pk 'Confirmada' %}" class="d-inline">
+                          {% csrf_token %}
+                          <button type="submit" class="btn btn-sm btn-outline-primary py-0 px-2">Confirmar</button>
+                        </form>
+                      {% endif %}
+
+                      {% if ins.status != 'Cancelada' %}
+                        <form method="post" action="{% url 'inscricao_alterar_status' ins.pk 'Cancelada' %}" class="d-inline">
+                          {% csrf_token %}
+                          <button type="submit" class="btn btn-sm btn-outline-danger py-0 px-2">Cancelar</button>
+                        </form>
+                      {% endif %}
+
+                      {% if not ins.data_hora_checkin %}
+                        <form method="post" action="{% url 'inscricao_checkin_rapido' ins.pk %}" class="d-inline">
+                          {% csrf_token %}
+                          <button type="submit" class="btn btn-sm btn-success py-0 px-2">Check-in</button>
+                        </form>
+                      {% endif %}
+
+                      <a href="{% url 'inscricao_checkin' ins.pk %}" class="btn btn-sm btn-outline-secondary py-0 px-2">
+                        Avaliar
+                      </a>
+
+                      {% if ins.cert_codigo %}
+                        <span class="badge bg-info text-dark">Cert: {{ ins.cert_codigo }}</span>
+                      {% elif ins.data_hora_checkin %}
+                        <a href="{% url 'certificado_create' %}?inscricao={{ ins.pk }}" class="btn btn-sm btn-outline-success py-0 px-2">
+                          Certificado
+                        </a>
+                      {% endif %}
+
+                      <form method="post" action="{% url 'inscricao_delete' ins.pk %}" class="d-inline m-0"
+                            onsubmit="return confirm('Excluir esta inscrição?');">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-outline-danger py-0 px-2">Excluir</button>
+                      </form>
+                    </div>
+                  </div>
+                {% empty %}
+                  <span class="text-muted small">Sem inscrições</span>
+                {% endfor %}
+              </td>
+              <td class="text-end text-nowrap">
+                <a href="{% url 'participante_inscrever' p.cpf_participante %}{% if evento_filtro %}?evento={{ evento_filtro.pk }}{% endif %}"
+                   class="btn btn-sm btn-outline-primary">Inscrever</a>
+                <a href="{% url 'participante_update' p.cpf_participante %}"
+                   class="btn btn-sm btn-outline-warning">Editar</a>
+                <a href="{% url 'participante_delete' p.cpf_participante %}"
+                   class="btn btn-sm btn-outline-danger">Excluir</a>
+              </td>
+            </tr>
+          {% endwith %}
+        {% empty %}
+          <tr>
+            <td colspan="5" class="text-center text-muted py-4">Nenhum participante encontrado.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

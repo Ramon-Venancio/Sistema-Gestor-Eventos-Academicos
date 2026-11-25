@@ -1,0 +1,51 @@
+{% extends 'eventos/base.html' %}
+
+{% block title %}Certificados{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1 class="h3 mb-0">Certificados emitidos</h1>
+  <a href="{% url 'certificado_create' %}" class="btn btn-success">+ Emitir certificado</a>
+</div>
+
+<div class="card shadow-sm">
+  <div class="table-responsive">
+    <table class="table table-striped table-hover align-middle mb-0">
+      <thead class="table-dark">
+        <tr>
+          <th>Código</th>
+          <th>Participante</th>
+          <th>Evento / Atividade</th>
+          <th>Emissão</th>
+          <th>Carga horária</th>
+          <th class="text-end">Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for c in certificados %}
+          <tr>
+            <td class="fw-bold text-nowrap">{{ c.codigo_de_validacao }}</td>
+            <td>
+              <div>{{ c.id_inscricao.cpf_participante.nome_participante }}</div>
+              <small class="text-muted">CPF: {{ c.id_inscricao.cpf_participante.cpf_participante }}</small>
+            </td>
+            <td>
+              <div class="fw-medium">{{ c.id_inscricao.codigo_atividade.titulo }}</div>
+              <small class="text-muted">{{ c.id_inscricao.codigo_atividade.codigo_evento.nome_evento }}</small>
+            </td>
+            <td>{{ c.data_de_emissao|date:"d/m/Y" }}</td>
+            <td><span class="badge bg-primary">{{ c.carga_horaria_certificada }}h</span></td>
+            <td class="text-end text-nowrap">
+              <a href="{% url 'certificado_delete' c.codigo_de_validacao %}" class="btn btn-sm btn-outline-danger">Excluir</a>
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="6" class="text-center text-muted py-4">Nenhum certificado emitido ainda.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

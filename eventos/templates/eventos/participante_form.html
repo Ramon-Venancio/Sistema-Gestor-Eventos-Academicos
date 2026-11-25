@@ -1,0 +1,148 @@
+{% extends 'eventos/base.html' %}
+
+{% block title %}{{ titulo }}{% endblock %}
+
+{% block content %}
+<div class="mb-3">
+  <a href="{% url 'participante_list' %}{% if evento_id %}?evento={{ evento_id }}{% endif %}" class="btn btn-sm btn-outline-secondary">
+  &larr; Voltar para participantes
+</a>
+</div>
+
+<div class="card shadow-sm" style="max-width: 720px;">
+  <div class="card-body">
+    <h1 class="h4 mb-4">{{ titulo }}</h1>
+
+    <form method="post">
+      {% csrf_token %}
+      {% if evento_id %}
+        <input type="hidden" name="evento" value="{{ evento_id }}">
+      {% endif %}
+
+      <div class="row g-3 mb-3">
+        <div class="col-md-4">
+          <label class="form-label">CPF (11 dígitos)</label>
+          <input type="text" name="cpf_participante" maxlength="11"
+                 value="{{ participante.cpf_participante|default:'' }}"
+                 class="form-control" {% if modo == 'editar' %}readonly{% endif %} required>
+        </div>
+        <div class="col-md-8">
+          <label class="form-label">Nome completo</label>
+          <input type="text" name="nome_participante"
+                 value="{{ participante.nome_participante|default:'' }}"
+                 class="form-control" required>
+        </div>
+      </div>
+
+      <div class="row g-3 mb-3">
+        <div class="col-md-6">
+          <label class="form-label">E-mail</label>
+          <input type="email" name="email_participante"
+                 value="{{ participante.email_participante|default:'' }}"
+                 class="form-control" required>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Telefone (só números)</label>
+          <input type="text" name="telefone_participante"
+                 value="{{ participante.telefone_participante|default:'' }}"
+                 class="form-control">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Nascimento</label>
+          <input type="date" name="data_nascimento"
+                 value="{{ participante.data_nascimento|date:'Y-m-d'|default:'' }}"
+                 class="form-control">
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Categoria</label>
+        <select name="categoria" id="id_categoria" class="form-select" onchange="alternarCategoria()">
+          <option value="aluno" {% if categoria_atual == 'aluno' %}selected{% endif %}>Aluno</option>
+          <option value="professor" {% if categoria_atual == 'professor' %}selected{% endif %}>Professor</option>
+          <option value="externo" {% if categoria_atual == 'externo' %}selected{% endif %}>Externo</option>
+        </select>
+      </div>
+
+      <div id="box-aluno" class="border rounded p-3 bg-light mb-3">
+        <h2 class="h6 mb-3">Dados de Aluno</h2>
+        <div class="row g-3">
+          <div class="col-md-4">
+            <label class="form-label">Matrícula</label>
+            <input type="text" name="matricula" value="{{ aluno.matricula|default:'' }}" class="form-control">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Curso</label>
+            <input type="text" name="curso" value="{{ aluno.curso|default:'' }}" class="form-control">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label">Semestre</label>
+            <input type="number" min="1" name="semestre" value="{{ aluno.semestre|default:'' }}" class="form-control">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label">Campus</label>
+            <input type="text" name="campus" value="{{ aluno.campus|default:'' }}" class="form-control">
+          </div>
+        </div>
+      </div>
+
+      <div id="box-professor" class="border rounded p-3 bg-light mb-3" style="display:none;">
+        <h2 class="h6 mb-3">Dados de Professor</h2>
+        <div class="row g-3">
+          <div class="col-md-4">
+            <label class="form-label">Titulação</label>
+            <input type="text" name="titulacao" value="{{ professor.titulacao|default:'' }}" class="form-control">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Departamento</label>
+            <input type="text" name="departamento" value="{{ professor.departamento|default:'' }}" class="form-control">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Link Lattes (http...)</label>
+            <input type="url" name="link_lattes" value="{{ professor.link_lattes|default:'' }}" class="form-control">
+          </div>
+        </div>
+      </div>
+
+      <div id="box-externo" class="border rounded p-3 bg-light mb-3" style="display:none;">
+        <h2 class="h6 mb-3">Dados de Participante Externo</h2>
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label">Instituição de origem</label>
+            <input type="text" name="instituicao_origem" value="{{ externo.instituicao_origem|default:'' }}" class="form-control">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Tipo de vínculo</label>
+            <input type="text" name="tipo_vinculo" value="{{ externo.tipo_vinculo|default:'' }}" class="form-control">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Cargo</label>
+            <input type="text" name="cargo" value="{{ externo.cargo|default:'' }}" class="form-control">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Cidade</label>
+            <input type="text" name="cidade" value="{{ externo.cidade|default:'' }}" class="form-control">
+          </div>
+        </div>
+      </div>
+
+      <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-primary">Salvar</button>
+        <a href="{% url 'participante_list' %}{% if evento_id %}?evento={{ evento_id }}{% endif %}" class="btn btn-outline-secondary">
+  Cancelar
+</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  function alternarCategoria() {
+    const cat = document.getElementById('id_categoria').value;
+    document.getElementById('box-aluno').style.display = cat === 'aluno' ? 'block' : 'none';
+    document.getElementById('box-professor').style.display = cat === 'professor' ? 'block' : 'none';
+    document.getElementById('box-externo').style.display = cat === 'externo' ? 'block' : 'none';
+  }
+  alternarCategoria();
+</script>
+{% endblock %}
