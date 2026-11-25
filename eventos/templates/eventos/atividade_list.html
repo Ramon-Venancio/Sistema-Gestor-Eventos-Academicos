@@ -1,0 +1,58 @@
+{% extends 'eventos/base.html' %}
+
+{% block title %}Atividades — {{ evento.nome_evento }}{% endblock %}
+
+{% block content %}
+<div class="mb-3 d-flex gap-2">
+  <a href="{% url 'evento_detail' evento.pk %}" class="btn btn-sm btn-outline-secondary">&larr; Detalhes do evento</a>
+  <a href="{% url 'evento_list' %}" class="btn btn-sm btn-outline-secondary">Todos os eventos</a>
+</div>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div>
+    <h1 class="h3 mb-0">Atividades de {{ evento.nome_evento }}</h1>
+    <small class="text-muted">
+      {{ evento.data_inicio|date:"d/m/Y" }} a {{ evento.data_fim|date:"d/m/Y" }}
+    </small>
+  </div>
+  <a href="{% url 'atividade_create' evento.pk %}" class="btn btn-primary">+ Criar atividade</a>
+</div>
+
+<div class="card shadow-sm">
+  <div class="table-responsive">
+    <table class="table table-striped table-hover align-middle mb-0">
+      <thead class="table-dark">
+        <tr>
+          <th>Código</th>
+          <th>Título</th>
+          <th>Tipo</th>
+          <th>Carga horária</th>
+          <th>Descrição</th>
+          <th class="text-end">Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for a in atividades %}
+          <tr>
+            <td>{{ a.codigo_atividade }}</td>
+            <td class="fw-medium">{{ a.titulo }}</td>
+            <td><span class="badge bg-secondary">{{ a.tipo }}</span></td>
+            <td>{{ a.carga_horaria }}h</td>
+            <td>{{ a.descricao_atividade|default:"-"|truncatechars:60 }}</td>
+            <td class="text-end text-nowrap">
+              <a href="{% url 'atividade_update' evento.pk a.pk %}" class="btn btn-sm btn-outline-warning">Editar</a>
+              <a href="{% url 'atividade_delete' evento.pk a.pk %}" class="btn btn-sm btn-outline-danger">Excluir</a>
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="6" class="text-center text-muted py-4">
+              Nenhuma atividade cadastrada para este evento.
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,70 @@
+{% extends 'eventos/base.html' %}
+
+{% block title %}{{ titulo }}{% endblock %}
+
+{% block content %}
+<div class="mb-3">
+  <a href="{% url 'certificado_list' %}" class="btn btn-sm btn-outline-secondary">&larr; Voltar para certificados</a>
+</div>
+
+<div class="card shadow-sm" style="max-width: 680px;">
+  <div class="card-body">
+    <h1 class="h4 mb-1">{{ titulo }}</h1>
+    <p class="text-muted small mb-4">
+      Apenas inscrições com <strong>check-in realizado</strong> e sem certificado aparecem na lista.
+    </p>
+
+    <form method="post" novalidate>
+      {% csrf_token %}
+
+      {% if form.non_field_errors %}
+        <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+      {% endif %}
+
+      <div class="mb-3">
+        <label for="{{ form.id_inscricao.id_for_label }}" class="form-label">Inscrição (com check-in)</label>
+        <select name="{{ form.id_inscricao.html_name }}" id="{{ form.id_inscricao.id_for_label }}" class="form-select" required>
+          <option value="">Selecione uma inscrição...</option>
+          {% for value, label in form.id_inscricao.field.choices %}
+            {% if value %}
+              <option value="{{ value }}" {% if form.id_inscricao.value|stringformat:"s" == value|stringformat:"s" %}selected{% endif %}>
+                {{ label }}
+              </option>
+            {% endif %}
+          {% endfor %}
+        </select>
+        {% for error in form.id_inscricao.errors %}<div class="text-danger small mt-1">{{ error }}</div>{% endfor %}
+      </div>
+
+      <div class="row g-3 mb-4">
+        <div class="col-md-5">
+          <label for="{{ form.codigo_de_validacao.id_for_label }}" class="form-label">Código de validação</label>
+          <input type="text" name="{{ form.codigo_de_validacao.html_name }}" id="{{ form.codigo_de_validacao.id_for_label }}"
+                 value="{{ form.codigo_de_validacao.value|default:'' }}" class="form-control" required>
+          {% for error in form.codigo_de_validacao.errors %}<div class="text-danger small mt-1">{{ error }}</div>{% endfor %}
+        </div>
+
+        <div class="col-md-4">
+          <label for="{{ form.data_de_emissao.id_for_label }}" class="form-label">Data de emissão</label>
+          <input type="date" name="{{ form.data_de_emissao.html_name }}" id="{{ form.data_de_emissao.id_for_label }}"
+                 value="{{ form.data_de_emissao.value|date:'Y-m-d'|default:form.data_de_emissao.value|default:'' }}"
+                 class="form-control" required>
+          {% for error in form.data_de_emissao.errors %}<div class="text-danger small mt-1">{{ error }}</div>{% endfor %}
+        </div>
+
+        <div class="col-md-3">
+          <label for="{{ form.carga_horaria_certificada.id_for_label }}" class="form-label">Carga horária (h)</label>
+          <input type="number" min="1" name="{{ form.carga_horaria_certificada.html_name }}" id="{{ form.carga_horaria_certificada.id_for_label }}"
+                 value="{{ form.carga_horaria_certificada.value|default:'' }}" class="form-control" required>
+          {% for error in form.carga_horaria_certificada.errors %}<div class="text-danger small mt-1">{{ error }}</div>{% endfor %}
+        </div>
+      </div>
+
+      <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-success">Emitir certificado</button>
+        <a href="{% url 'certificado_list' %}" class="btn btn-outline-secondary">Cancelar</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

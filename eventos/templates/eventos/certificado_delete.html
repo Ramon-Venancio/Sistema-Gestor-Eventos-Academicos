@@ -1,0 +1,20 @@
+{% extends 'eventos/base.html' %}
+
+{% block title %}Excluir certificado{% endblock %}
+
+{% block content %}
+<div class="card shadow-sm border-danger" style="max-width: 540px;">
+  <div class="card-body">
+    <h1 class="h4 text-danger mb-3">Excluir certificado</h1>
+    <p class="mb-4">
+      Deseja excluir o certificado <strong>{{ certificado.codigo_de_validacao }}</strong>
+      de <strong>{{ certificado.id_inscricao.cpf_participante.nome_participante }}</strong>?
+    </p>
+    <form method="post" class="d-flex gap-2">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-danger">Confirmar exclusão</button>
+      <a href="{% url 'certificado_list' %}" class="btn btn-secondary">Cancelar</a>
+    </form>
+  </div>
+</div>
+{% endblock %}
